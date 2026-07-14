@@ -13,12 +13,19 @@
         host: document.getElementById("host"),
         reasonerPort: document.getElementById("reasonerPort"),
         onnxPort: document.getElementById("onnxPort"),
+        pentestPort: document.getElementById("pentestPort"),
         userField: document.getElementById("userField"),
         queryText: document.getElementById("queryText"),
         connectBtn: document.getElementById("connectBtn"),
         sendBtn: document.getElementById("sendBtn"),
         log: document.getElementById("log"),
-        statusPill: document.getElementById("statusPill")
+        statusPill: document.getElementById("statusPill"),
+        authorizedCheck: document.getElementById("authorizedCheck"),
+        subnetField: document.getElementById("subnetField"),
+        sweepBtn: document.getElementById("sweepBtn"),
+        targetHost: document.getElementById("targetHost"),
+        targetPorts: document.getElementById("targetPorts"),
+        portScanBtn: document.getElementById("portScanBtn")
     };
 
     function log(msg) {
@@ -36,6 +43,7 @@
             host: els.host.value.trim(),
             reasonerPort: els.reasonerPort.value.trim() || "8001",
             onnxPort: els.onnxPort.value.trim() || "8000",
+            pentestPort: els.pentestPort.value.trim() || "8002",
             user: els.userField.value.trim()
         };
         try {
@@ -60,6 +68,10 @@
 
     function onnxUrl(profile, path) {
         return "http://" + profile.host + ":" + profile.onnxPort + path;
+    }
+
+    function pentestUrl(profile, path) {
+        return "http://" + profile.host + ":" + profile.pentestPort + path;
     }
 
     function testConnection() {
@@ -123,11 +135,94 @@
         els.host.value = profile.host || "";
         els.reasonerPort.value = profile.reasonerPort || "8001";
         els.onnxPort.value = profile.onnxPort || "8000";
+        els.pentestPort.value = profile.pentestPort || "8002";
         els.userField.value = profile.user || "";
+    }
+
+    // --- Recon panel (angieai-pentest) ---------------------------------
+    // Authorized-use-only: the service itself refuses unauthorized/public
+    // targets too, but the app also blocks the request client-side so the
+    // operator has to explicitly check the box every session.
+
+    function requireAuthorized() {
+        if (!els.authorizedCheck.checked) {
+            log("Check \"I own or have permission to test this network/device\" first.");
+            return false;
+        }
+        return true;
+    }
+
+    function sweepSubnet() {
+        var profile = saveProfile();
+        var subnet = els.subnetField.value.trim();
+        if (!profile.host) { log("Enter a host/IP first."); return; }
+        if (!subnet) { log("Enter a subnet, e.g. 192.168.1.0/24."); return; }
+        if (!requireAuthorized()) return;
+
+        log("-> recon: sweeping " + subnet + " ...");
+        fetch(pentestUrl(profile, "/scan/hosts"), {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ subnet: subnet, authorized: true, timeout_ms: 300 })
+        })
+            .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+            .then(function (res) {
+                if (!res.ok) {
+                    log("<- recon rejected: " + (res.data.detail || JSON.stringify(res.data)));
+                    return;
+                }
+                var alive = res.data.alive_hosts || [];
+                log("<- " + alive.length + "/" + res.data.hosts_checked + " hosts alive in " + res.data.elapsed_ms + "ms");
+                alive.forEach(function (h) { log("   alive: " + h); });
+                setOnline(true);
+            })
+            .catch(function (err) {
+                log("<- recon request failed: " + err.message + " (is angieai-pentest running on that host/port?)");
+                setOnline(false);
+            });
+    }
+
+    function scanPorts() {
+        var profile = saveProfile();
+        var host = els.targetHost.value.trim();
+        var portsRaw = els.targetPorts.value.trim();
+        if (!host) { log("Enter a target host/IP first."); return; }
+        if (!requireAuthorized()) return;
+
+        var body = { host: host, authorized: true, grab_banners: true };
+        if (portsRaw) {
+            body.ports = portsRaw.split(",").map(function (p) { return parseInt(p.trim(), 10); }).filter(function (p) { return !isNaN(p); });
+        }
+
+        log("-> recon: scanning ports on " + host + " ...");
+        fetch(pentestUrl(profile, "/scan/ports"), {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body)
+        })
+            .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+            .then(function (res) {
+                if (!res.ok) {
+                    log("<- recon rejected: " + (res.data.detail || JSON.stringify(res.data)));
+                    return;
+                }
+                var open = res.data.open_ports || [];
+                log("<- " + open.length + "/" + res.data.ports_checked + " ports open on " + host + " in " + res.data.elapsed_ms + "ms");
+                open.forEach(function (p) {
+                    log("   open: " + p.port + (p.service_guess ? " (" + p.service_guess + ")" : "") + (p.banner ? " — " + p.banner : ""));
+                });
+                setOnline(true);
+            })
+            .catch(function (err) {
+                log("<- recon request failed: " + err.message + " (is angieai-pentest running on that host/port?)");
+                setOnline(false);
+            });
     }
 
     els.connectBtn.addEventListener("click", testConnection);
     els.sendBtn.addEventListener("click", sendToReasoner);
+    els.sweepBtn.addEventListener("click", sweepSubnet);
+    els.portScanBtn.addEventListener("click", scanPorts);
 
     restoreProfile();
     log("BB10 Bridge Console ready.");

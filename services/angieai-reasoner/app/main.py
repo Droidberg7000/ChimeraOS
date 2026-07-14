@@ -28,6 +28,12 @@ def reason(q: Query):
 
     if "urgent" in text or "asap" in text:
         return {"decision": "priority", "lane": "AngieAI-local"}
+    if (
+        "scan" in text or "recon" in text or "nmap" in text
+        or "port scan" in text or "pentest" in text or "cyberdeck" in text
+        or "subnet" in text
+    ):
+        return {"decision": "pentest-recon", "lane": "angieai-pentest"}
     if "login" in text or "auth" in text or "security" in text:
         return {"decision": "security", "lane": "AngieAI-local"}
     if "build" in text or "apk" in text or "bar" in text or "android" in text:

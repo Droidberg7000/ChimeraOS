@@ -2,7 +2,11 @@
 
 Deterministic routing/reasoning microservice for AngieAI. Given a piece of
 text, it decides which lane in the AI-to-AI protocol should handle it
-(`AngieAI-local`, `google-ai-studio`, `dmux`, `angieai-onnx`, `openrouter`).
+(`AngieAI-local`, `google-ai-studio`, `dmux`, `angieai-onnx`, `angieai-pentest`,
+`openrouter`). Recon/scan-flavored text ("scan", "recon", "nmap", "pentest",
+"cyberdeck", "subnet", "port scan") routes to `angieai-pentest` — see
+`services/angieai-pentest/README.md` for the authorized-use-only guardrails
+on that lane.
 
 - `GET /health` — liveness check
 - `POST /reason` — body: `{"text": "..."}`, returns `{"decision": ..., "lane": ...}`

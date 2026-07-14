@@ -131,3 +131,41 @@ button.secondary {
     text-align: center;
     margin-top: 10px;
 }
+
+.recon-panel {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #5c3c14;
+    border-radius: 8px;
+    background: #140f0a;
+}
+
+.recon-title {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: #ffb347;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: #d9c3a0;
+    text-transform: none;
+    margin-bottom: 10px;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.recon-panel button.secondary {
+    border-color: #6a4a1e;
+    color: #ffb347;
+}

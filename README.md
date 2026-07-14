@@ -101,6 +101,9 @@ are part of the backstory canon and should be preserved, not rewritten.
   which lane (local, build, dev-workflow, inference, fallback) a request goes to.
 - **angieai-onnx** is AngieAI's local model-inference lane (FastAPI + ONNX Runtime),
   with an optional TorchServe path for managed multi-model serving.
+- **angieai-pentest** is the authorized-use-only recon/diagnostics lane for the
+  cyberdeck mission (host sweeps, port scans, banner grabs on your own private
+  network only — see `ETHICS.md` and `services/angieai-pentest/README.md`).
 - **Google AI Studio** is treated as the remote build agent for anything that needs
   Android/BAR packaging horsepower (see `GOOGLE_AI_STUDIO_PROMPT.md`).
 - **dmux** manages parallel sub-agents (Claude Code / Codex / OpenCode-style) across
@@ -120,8 +123,9 @@ ChimeraOS-final-build/
 ├── AI_TO_AI_PROTOCOL.md             ← rules for how AngieAI talks to other agents
 ├── GOOGLE_AI_STUDIO_PROMPT.md       ← ready-to-paste prompt for the BB10/Android build
 ├── setup.sh                         ← Termux/Linux/macOS bootstrap script
-├── docker-compose.yml               ← brings up angieai-onnx + angieai-reasoner
+├── docker-compose.yml               ← brings up angieai-onnx + angieai-reasoner + angieai-pentest
 ├── .env.example                     ← OPENROUTER_API_KEY + service URLs template
+├── ETHICS.md                        ← authorized-use-only policy for the recon/pentest lane
 ├── .github/workflows/
 │   ├── chimera-ci.yml               ← main CI: validates scripts, wires OPENROUTER_API_KEY
 │   └── dmux-ci.yml                  ← dmux CI, reuses the same OPENROUTER_API_KEY secret
@@ -129,10 +133,11 @@ ChimeraOS-final-build/
 │   └── chimeraos_workflow_bundle.sh ← real dmux/worktree + image sign/SBOM supply-chain script
 ├── services/
 │   ├── angieai-onnx/                ← FastAPI + ONNX Runtime local inference lane
-│   └── angieai-reasoner/            ← deterministic routing/reasoning microservice
+│   ├── angieai-reasoner/            ← deterministic routing/reasoning microservice
+│   └── angieai-pentest/             ← authorized-use-only recon/diagnostics microservice (cyberdeck mission)
 ├── repos/                           ← pre-cloned BB10/WebWorks build + reference repos (see repos/REPOS.md)
 ├── apps/
-│   └── bb10-bridge-console/         ← real Q20 WebWorks app source (config.xml/index.html/assets) + prebuilt source zip
+│   └── bb10-bridge-console/         ← real Q20 WebWorks app source (config.xml/index.html/assets) + prebuilt source zip, now with a Recon panel wired to angieai-pentest
 ├── docs/
 │   ├── BUILD-Q20.md                 ← BlackBerry Q20 WebWorks build + install guide
 │   ├── BB10-Mac-Linux-Bootstrap.md  ← full BB10 SDK/packager bootstrap (Mac/Linux)
@@ -165,10 +170,13 @@ docker compose up --build
 curl -s http://localhost:8001/reason -X POST -H 'content-type: application/json' \
   -d '{"text": "build me an apk for the Q20"}'
 curl -s http://localhost:8000/health
+curl -s http://localhost:8002/health
 ```
 
 `angieai-reasoner` (port 8001) decides which lane a request belongs to;
-`angieai-onnx` (port 8000) is the local model-inference lane. It now ships
+`angieai-onnx` (port 8000) is the local model-inference lane; `angieai-pentest`
+(port 8002) is the authorized-use-only recon/diagnostics lane — see
+`ETHICS.md` before pointing it at anything. `angieai-onnx` now ships
 with a verified default `model.onnx` (MNIST digit classifier, see
 `services/angieai-onnx/README.md`) so the container builds and
 `/predict` returns real output instead of a stub error — swap it for

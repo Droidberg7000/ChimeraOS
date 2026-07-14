@@ -6,7 +6,9 @@
     <description>
         AngieAI / ChimeraOS bridge console for BlackBerry Classic (Q20).
         Connects to a Termux-hosted AngieAI instance (angieai-reasoner /
-        angieai-onnx services) over the local network.
+        angieai-onnx / angieai-pentest services) over the local network.
+        Includes an authorized-use-only Recon panel for testing your own
+        home network/devices.
     </description>
     <author href="https://github.com/" email="">ChimeraOS / AngieAI</author>
     <license>Apache-2.0</license>

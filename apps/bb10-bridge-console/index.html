@@ -29,6 +29,10 @@
                     <label for="onnxPort">ONNX Port</label>
                     <input type="number" id="onnxPort" placeholder="8000" />
                 </div>
+                <div class="field">
+                    <label for="pentestPort">Pentest Port</label>
+                    <input type="number" id="pentestPort" placeholder="8002" />
+                </div>
             </div>
 
             <div class="field">
@@ -43,6 +47,32 @@
 
             <button type="button" id="connectBtn">Test Connection</button>
             <button type="button" id="sendBtn" class="secondary">Send to Reasoner</button>
+
+            <div class="recon-panel">
+                <div class="recon-title">RECON &middot; authorized use only</div>
+                <label class="checkbox-row" for="authorizedCheck">
+                    <input type="checkbox" id="authorizedCheck" />
+                    I own or have explicit permission to test this network/device
+                </label>
+
+                <div class="field">
+                    <label for="subnetField">Subnet Sweep (CIDR)</label>
+                    <input type="text" id="subnetField" placeholder="192.168.1.0/24" />
+                </div>
+                <button type="button" id="sweepBtn" class="secondary">Sweep Subnet</button>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="targetHost">Target Host</label>
+                        <input type="text" id="targetHost" placeholder="192.168.1.1" />
+                    </div>
+                    <div class="field">
+                        <label for="targetPorts">Ports (csv)</label>
+                        <input type="text" id="targetPorts" placeholder="22,80,443" />
+                    </div>
+                </div>
+                <button type="button" id="portScanBtn" class="secondary">Scan Ports</button>
+            </div>
 
             <div class="log" id="log">Bridge console idle. Enter your Termux host/ports and tap Test Connection.</div>
         </form>

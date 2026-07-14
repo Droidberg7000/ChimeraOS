@@ -2,8 +2,10 @@
 #
 # angieai-onnx      -> local model inference lane (FastAPI + ONNX Runtime)
 # angieai-reasoner   -> deterministic routing/reasoning lane
+# angieai-pentest    -> authorized-use-only recon/diagnostics lane (cyberdeck
+#                       mission) — see services/angieai-pentest/README.md
 #
-# Both are optional local backends AngieAI can call instead of a remote
+# These are optional local backends AngieAI can call instead of a remote
 # OpenRouter model. Bring up with:
 #   docker compose up --build
 #
@@ -26,6 +28,17 @@ services:
     container_name: angieai-reasoner
     ports:
       - "8001:8001"
+    restart: unless-stopped
+    networks:
+      - angieai-net
+
+  angieai-pentest:
+    build: ./services/angieai-pentest
+    container_name: angieai-pentest
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./services/angieai-pentest/logs:/app/logs
     restart: unless-stopped
     networks:
       - angieai-net
