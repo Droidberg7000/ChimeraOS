@@ -8,6 +8,7 @@
     "use strict";
 
     var STORAGE_KEY = "bb10BridgeConsole.profile";
+    var BG_STORAGE_KEY = "bb10BridgeConsole.background";
 
     var els = {
         host: document.getElementById("host"),
@@ -27,7 +28,8 @@
         targetPorts: document.getElementById("targetPorts"),
         portScanBtn: document.getElementById("portScanBtn"),
         fullRangeBtn: document.getElementById("fullRangeBtn"),
-        analyzeBtn: document.getElementById("analyzeBtn")
+        analyzeBtn: document.getElementById("analyzeBtn"),
+        bgSelect: document.getElementById("bgSelect")
     };
 
     var lastPortScan = null; // { host, open_ports } from the most recent /scan/ports call
@@ -143,6 +145,33 @@
         els.pentestPort.value = profile.pentestPort || "8002";
         els.userField.value = profile.user || "";
         els.authorizedCheck.checked = !!profile.authorized;
+    }
+
+    // --- Device background picker --------------------------------------
+    // Swaps a full-bleed background image behind the console. "default"
+    // keeps the plain terminal-green look; any other value adds a
+    // "bg-<value>" class to <body>, matched by a rule in style.css.
+
+    function applyBackground(value) {
+        document.body.className = document.body.className
+            .split(" ")
+            .filter(function (c) { return c.indexOf("bg-") !== 0; })
+            .join(" ")
+            .trim();
+        if (value && value !== "default") {
+            document.body.className = (document.body.className + " bg-" + value).trim();
+        }
+    }
+
+    function saveBackground(value) {
+        try { localStorage.setItem(BG_STORAGE_KEY, value); } catch (e) { /* non-fatal */ }
+    }
+
+    function restoreBackground() {
+        var value = "default";
+        try { value = localStorage.getItem(BG_STORAGE_KEY) || "default"; } catch (e) { /* non-fatal */ }
+        if (els.bgSelect) els.bgSelect.value = value;
+        applyBackground(value);
     }
 
     // --- Recon panel (angieai-pentest) ---------------------------------
@@ -269,6 +298,14 @@
     els.portScanBtn.addEventListener("click", scanPorts);
     els.fullRangeBtn.addEventListener("click", useFullRange);
     els.analyzeBtn.addEventListener("click", analyzeLastScan);
+    if (els.bgSelect) {
+        els.bgSelect.addEventListener("change", function () {
+            applyBackground(els.bgSelect.value);
+            saveBackground(els.bgSelect.value);
+        });
+    }
+
+    restoreBackground();
 
     restoreProfile();
     log("BB10 Bridge Console ready.");

@@ -76,6 +76,15 @@ real device or `main`.
 | HTTPS/TLS requests fail on-device (BB10 or legacy BBOS 9900/Pearl 8130) | Old root CA store / deprecated TLS stack | Follow the decision chart in `docs/blackberry-devices-tls-workaround-pack.md` (BerryCore/Term49+Termux for BB10; BBSSH/Opera Mini/AppLoader for legacy BBOS) by use case (SSH, browsing, downloads) |
 | Unsure where to get a legitimate Termux APK, legacy BBOS ALX/COD/JAD/JAR, or a BB10 BAR/APK build | Forum mirrors are low-trust | Use the source list + 4-point download policy in `docs/blackberry-package-source-index.md` (official sources first, record SHA-256, keep signing-source consistency) |
 
+## ChimeraOS drive sync issues
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `sync_to_chimeraos_drive.sh` says it can't find the drive | Drive mounted somewhere non-standard, or volume name isn't exactly `ChimeraOS` | Pass the mount path explicitly: `./scripts/sync_to_chimeraos_drive.sh /path/to/mount` |
+| `Sync-ToChimeraOSDrive.ps1` errors that it can't find the volume | Windows assigned a drive letter but the label doesn't match, or `Get-Volume` needs admin rights on some systems | Re-run with the drive letter directly: `.\scripts\Sync-ToChimeraOSDrive.ps1 -DriveLetter E:` |
+| robocopy exits non-zero | robocopy's own exit codes 0-7 all mean "success with some changes"; 8+ is a real error | Only treat exit codes ≥ 8 as failures (the script already does this) — re-run if you see a real error code |
+| `bg-spongebob-voodoo` option doesn't change anything in the BB10 Bridge Console | Old cached `index.html`/`style.css`/`app.js` on-device | Reinstall/redeploy the app source in `apps/bb10-bridge-console/`, or hard-refresh if testing in a desktop browser |
+
 ## Where things are logged
 
 Local orchestration/deploy actions are logged to:

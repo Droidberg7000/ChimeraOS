@@ -98,6 +98,19 @@ Treat this drive as the final-edition compilation target, not a working repo clo
 copy verified, tagged builds onto it rather than developing directly on it. This repo
 and its GitHub remote remain the source of truth; the drive is the durable offline copy.
 
+Two helper scripts mirror this repo onto the drive whenever it's plugged in
+(incremental sync, not a blind re-copy each time):
+
+- **macOS / Linux:** `./scripts/sync_to_chimeraos_drive.sh` — auto-detects the
+  drive under `/Volumes/ChimeraOS`, `/media/$USER/ChimeraOS`,
+  `/run/media/$USER/ChimeraOS`, or `/mnt/ChimeraOS`; or pass an explicit mount
+  path as the first argument.
+- **Windows:** `.\scripts\Sync-ToChimeraOSDrive.ps1` — auto-detects the drive by
+  volume label `ChimeraOS`; or pass `-DriveLetter E:` explicitly.
+
+Both write a `.last_synced_utc` timestamp file at the destination root so you
+can see at a glance when the drive was last refreshed.
+
 ## Architecture
 
 ```
@@ -194,14 +207,16 @@ ChimeraOS-final-build/
 │   ├── chimeraos_workflow_bundle.sh ← real dmux/worktree + image sign/SBOM supply-chain script
 │   ├── termux_stack_up.sh           ← brings up all 3 services natively on Termux (no Docker)
 │   ├── termux_stack_down.sh         ← stops what termux_stack_up.sh started
-│   └── wifi_recon_termux.sh         ← passive Wi-Fi beacon recon via Termux:API → angieai-pentest
+│   ├── wifi_recon_termux.sh         ← passive Wi-Fi beacon recon via Termux:API → angieai-pentest
+│   ├── sync_to_chimeraos_drive.sh   ← mirrors this repo onto the ChimeraOS SanDisk drive (macOS/Linux)
+│   └── Sync-ToChimeraOSDrive.ps1    ← same mirror sync, for Windows
 ├── services/
 │   ├── angieai-onnx/                ← FastAPI + ONNX Runtime local inference lane
 │   ├── angieai-reasoner/            ← deterministic routing/reasoning microservice
 │   └── angieai-pentest/             ← authorized-use-only recon/diagnostics microservice (cyberdeck mission)
 ├── repos/                           ← pre-cloned BB10/WebWorks build + reference repos (see repos/REPOS.md)
 ├── apps/
-│   └── bb10-bridge-console/         ← real Q20 WebWorks app source (config.xml/index.html/assets) + prebuilt source zip, now with a Recon panel wired to angieai-pentest
+│   └── bb10-bridge-console/         ← real Q20 WebWorks app source (config.xml/index.html/assets) + prebuilt source zip, with a Recon panel wired to angieai-pentest and a selectable device background (Default / SpongeBob Voodoo)
 ├── docs/
 │   ├── BUILD-Q20.md                          ← BlackBerry Q20 WebWorks build + install guide
 │   ├── BB10-Mac-Linux-Bootstrap.md           ← full BB10 SDK/packager bootstrap (Mac/Linux)

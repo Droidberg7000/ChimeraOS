@@ -9,9 +9,23 @@ html, body {
     width: 100%;
     height: 100%;
     background: #050705;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: #d9ffe0;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     -webkit-user-select: none;
+    transition: background 0.3s ease;
+}
+
+/* Device background presets, toggled via the "Device Background" picker.
+   "default" leaves the plain terminal-green background above; any other
+   value paints a full-bleed image behind the (semi-transparent) screen. */
+body.bg-spongebob-voodoo {
+    background-image: url("assets/bg-spongebob-voodoo.jpg");
+}
+body.bg-spongebob-voodoo .screen {
+    background: rgba(5, 7, 5, 0.72);
 }
 
 .screen {
@@ -82,6 +96,20 @@ input:focus {
     outline: none;
     border-color: #7CFC7C;
 }
+
+.bg-picker { margin-bottom: 10px; }
+select {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #24402a;
+    background: #0d130e;
+    color: #eaffea;
+    -webkit-appearance: none;
+    appearance: none;
+}
+select:focus { outline: none; border-color: #7CFC7C; }
 
 .field {
     margin-bottom: 2px;
