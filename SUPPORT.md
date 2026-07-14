@@ -25,6 +25,33 @@
 | Different key needed for prod vs dev | Single repo secret used everywhere | Create a GitHub **Environment** (e.g. `production`), add the secret there, set `environment: production` on the job |
 | `dmux-ci.yml` can't find `package.json` | dmux lives in a different repo/folder than expected | Point the workflow at the correct working directory, or move dmux config to repo root |
 
+## angieai-pentest / recon issues
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `403 Set authorized=true...` | Request omitted the `authorized` flag | Add `"authorized": true` to `/scan/hosts` or `/scan/ports` — there is no way around this, by design |
+| `400 ... is not a private/loopback/link-local address` | Target is a public IP | This service refuses public targets unconditionally, even with `authorized: true`. Point it at your own LAN/loopback instead |
+| `POST /analyze/ports` or `POST /recon/wifi` returns `422` | Payload shape doesn't match the model | `/analyze/ports` wants `{"host": ..., "open_ports": [{"port": N, ...}]}`; `/recon/wifi` wants `{"networks": [{"ssid": ..., "bssid": ..., "capabilities": ...}]}` |
+| Full 1-65535 port scan takes minutes | Default timeout is too generous for a huge range across a 64-worker pool | Pass a lower `timeout_ms` (e.g. `10`–`50`) in the request body — a full range scan with `timeout_ms: 10` finishes in well under a minute against a live host |
+| `/analyze/ports` or `/recon/wifi` returns no findings | Nothing matched the heuristic rules | Expected — both are pattern-matchers over a small known-bad list (`services/angieai-pentest/app/signatures.py`), not real vulnerability scanners. No findings is not proof of safety |
+
+## Termux native stack-up issues (`scripts/termux_stack_up.sh`)
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `uvicorn: command not found` / import errors in the log | `pip install` step failed silently (e.g. `onnxruntime` has no prebuilt wheel for your Android ABI) | Check `~/.angieai/logs/<service>.log`; `angieai-reasoner`/`angieai-pentest` have no heavy deps and should always come up, `angieai-onnx` is the one most likely to fail on-device |
+| Script says a service is already running but it isn't answering | Stale PID file from a crashed process reusing a PID | `scripts/termux_stack_down.sh` then re-run `termux_stack_up.sh`; if it still misbehaves, `rm ~/.angieai/pids/*.pid` and retry |
+| Port already in use | A previous run wasn't stopped cleanly, or something else is bound to 8000/8001/8002 | `scripts/termux_stack_down.sh` first, or `pkill -f uvicorn` as a last resort |
+
+## Wi-Fi recon issues (`scripts/wifi_recon_termux.sh`)
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `termux-wifi-scaninfo not found` | Termux:API app/package missing | Install the Termux:API app (F-Droid/Play) **and** run `pkg install termux-api` inside Termux |
+| `termux-wifi-scaninfo` returns an empty list | Location permission not granted | Android requires location permission for Wi-Fi scan results — grant it to Termux:API in system settings |
+| Script can't reach `angieai-pentest` | Stack not up yet, or wrong host/port | Run `scripts/termux_stack_up.sh` first; pass a custom host/port as args if not using the defaults (`localhost 8002`) |
+| Looking for BLE scanning | Not supported | Termux:API has no direct BLE scan capability, and this project doesn't implement active Wi-Fi/BLE attack tooling regardless — see `ETHICS.md`. Wi-Fi recon here is Wi-Fi (802.11) beacon analysis only |
+
 ## Device build issues (BB10 / Android)
 
 See `docs/BUILD-Q20.md` and `docs/BB10-Mac-Linux-Bootstrap.md` for the full

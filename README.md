@@ -83,7 +83,8 @@ are part of the backstory canon and should be preserved, not rewritten.
                     ┌───────────┴───────────────┐
                     │        AngieAI             │
                     │  (local orchestrator /      │
-                    │   "text CPU" reasoning)     │
+                    │   "text CPU" reasoning,      │
+                    │   angieai-reasoner :8001)    │
                     └──┬───────┬───────┬─────────┘
                        │       │       │
                  ┌─────▼──┐ ┌──▼───┐ ┌─▼──────────┐
@@ -93,6 +94,37 @@ are part of the backstory canon and should be preserved, not rewritten.
                  │ agents)│ │+ pkgs│ │  fallback)  │
                  └────────┘ └──────┘ └────────────┘
 ```
+
+angieai-reasoner routes each incoming request to one of two local
+inference/action lanes, both reachable from the BB10 Bridge Console client:
+
+```
+           BB10 Bridge Console (Q20 WebWorks app, or any REST client)
+                              │  HTTP
+                              ▼
+                 angieai-reasoner  :8001  (routing / "text CPU")
+                    │                          │
+                    ▼                          ▼
+           angieai-onnx  :8000          angieai-pentest  :8002
+           FastAPI + ONNX Runtime       authorized-use-only recon lane
+           local model inference        /scan/hosts, /scan/ports,
+                                         /analyze/ports, /recon/wifi
+```
+
+Both deploy the same way at the container level, but there are two supported
+run lanes depending on hardware:
+
+- **Docker Compose lane** (Linux/macOS dev machine): `docker compose up
+  --build` brings up all three services on a shared `angieai-net` bridge
+  network — see "Bring up the local AI services" below.
+- **Termux-native lane** (on-device, Android/Q20-adjacent, no Docker
+  daemon available): `scripts/termux_stack_up.sh` starts the same three
+  FastAPI apps directly under Termux's own Python via background `uvicorn`
+  processes, with PIDs tracked under `~/.angieai/pids/` and logs under
+  `~/.angieai/logs/`. `scripts/termux_stack_down.sh` reverses it.
+- Either lane, the BB10 Bridge Console (or `curl`, or `wifi_recon_termux.sh`)
+  talks to the same `:8000/:8001/:8002` HTTP surface — the client doesn't
+  need to know which lane is running underneath.
 
 - **AngieAI** is the always-local reasoning layer ("text CPU"). It never hands off
   core reasoning to a remote shell — it only ever runs pre-fetched, verified
