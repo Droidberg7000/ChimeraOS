@@ -88,6 +88,16 @@ yet. If you want it merged in (e.g. matching the BB10 Bridge Console's look to t
 Gateway UI, or porting any logic from it), point at the current AI Studio URL and it can be
 pulled in as its own lane, per the AI-to-AI protocol's Google AI Studio role.
 
+### Final build storage
+
+The canonical, off-device home for the compiled final build (repo contents, exported
+models, packaged BAR/APKs, and any offline archives) is a dedicated **SanDisk 500GB
+external drive named `ChimeraOS`** (may show up at the OS/volume level under an
+internal label such as `prchl_z.ai` depending on how it was formatted/mounted).
+Treat this drive as the final-edition compilation target, not a working repo clone —
+copy verified, tagged builds onto it rather than developing directly on it. This repo
+and its GitHub remote remain the source of truth; the drive is the durable offline copy.
+
 ## Architecture
 
 ```
