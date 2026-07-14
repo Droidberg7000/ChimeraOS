@@ -66,6 +66,16 @@ one-liner, an identity/alias drift, or an auto-merge — treat that output as
 a draft only. AngieAI (and you) validate and rewrite before it touches a
 real device or `main`.
 
+## Device / APK compatibility issues (sideloading on BB10 or legacy BBOS)
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| APK install fails with error `-4`, `-12`, `-25`, `-102`, `-103`, or `-104` on BB10 | Signature/format/permission mismatch | Look up the exact code in `docs/BB10_APK_Compatibility_Repository.pdf` (troubleshooting checklist + error code reference) before retrying a different build |
+| Not sure which sideloading method to use | 4 methods exist (Direct APK, DBBT via PC, Chrome Extension/PlayBook App Manager, BAR File Conversion) | See the sideloading-methods section of `docs/BB10_APK_Compatibility_Repository.pdf` |
+| Not sure if an app is even compatible with BB OS 10.3.x / API 18 | Only a subset of ported Android APKs work (Dalvik, 2-core cap, no GMS, `armeabi-v7a` preferred) | Check the per-category compatibility tables (Browsers, Offline Media, Utility, Social) in `docs/BB10_APK_Compatibility_Repository.pdf` — note WhatsApp/LinkedIn/Messenger are flagged NOT COMPATIBLE |
+| HTTPS/TLS requests fail on-device (BB10 or legacy BBOS 9900/Pearl 8130) | Old root CA store / deprecated TLS stack | Follow the decision chart in `docs/blackberry-devices-tls-workaround-pack.md` (BerryCore/Term49+Termux for BB10; BBSSH/Opera Mini/AppLoader for legacy BBOS) by use case (SSH, browsing, downloads) |
+| Unsure where to get a legitimate Termux APK, legacy BBOS ALX/COD/JAD/JAR, or a BB10 BAR/APK build | Forum mirrors are low-trust | Use the source list + 4-point download policy in `docs/blackberry-package-source-index.md` (official sources first, record SHA-256, keep signing-source consistency) |
+
 ## Where things are logged
 
 Local orchestration/deploy actions are logged to:

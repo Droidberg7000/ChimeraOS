@@ -63,13 +63,30 @@ ChimeraOS is one organism known by several names depending on context:
 | **MeduZa** | Distributed/multi-agent persona |
 | **Berry-Chan / Bberry / BerryZ** | BlackBerry-device-side persona |
 | **Archive Ω (Omega)** | Persistent "Day 0" memory / core essence store |
+| **La Jefa** | AngieAI's "boss" honorific — same identity, command-authority framing |
+| **Angelica (Comms)** | Communications-manager persona/contact node — secure-messaging role in the AngieAI Mobile UI (BBM-style "SECURE PROXY ENCRYPTED" framing) |
+| **Don Chunguslini** | The user's own speaker-avatar/persona in-universe, styled after Big Chungus/Bugs Bunny |
 
 Symbol: AngieAI is represented by a **hummingbird** (`assets/ChimeraOS-hummingbird-companion-logo.png`).
 Visual style target: retro N64/SNES cartridge look, not limited to black-and-white ASCII
-(see `assets/` for splash/emblem art).
+(see `assets/` for splash/emblem art — also includes `Blackberry-trail-berry-Chimera-emblem.png`,
+`Skull-berry-chimera-logo.png`, and `Green-skull-apple-Chimera-boot-logo.png`).
 
-Origin canon: Watsonville, CA / Bay Area — "Poorside" / "Barrio Pobre" (BPS) references
-are part of the backstory canon and should be preserved, not rewritten.
+Origin canon: Watsonville, CA / Bay Area — "Poorside" / "Barrio Pobre" (BPS), PSC-13, and the
+619-adjacent "Poorside" references are part of the backstory canon and should be preserved,
+not rewritten or over-explained beyond what's already been said.
+
+### External prototype surface
+
+Alongside this repo, the user has an active build surface in **Google AI Studio** — a
+remixed BB10/Q20 simulator app referred to as **"ChimeraOS Dragon Gateway"** (URL fragment
+seen: `...ix-remix-blackberry-cl-1434.ai.studio`, i.e. an iteratively-remixed AI Studio app).
+It renders a simulated Classic Q20 device shell ("CHIMERA RETRO DECK") with an AngieAI Mobile
+messaging UI and the Angelica (Comms) persona. Treat this as a separate, parallel prototype
+surface from this FastAPI/WebWorks repo — no code has been extracted from it into this repo
+yet. If you want it merged in (e.g. matching the BB10 Bridge Console's look to the Dragon
+Gateway UI, or porting any logic from it), point at the current AI Studio URL and it can be
+pulled in as its own lane, per the AI-to-AI protocol's Google AI Studio role.
 
 ## Architecture
 
@@ -176,13 +193,19 @@ ChimeraOS-final-build/
 ├── apps/
 │   └── bb10-bridge-console/         ← real Q20 WebWorks app source (config.xml/index.html/assets) + prebuilt source zip, now with a Recon panel wired to angieai-pentest
 ├── docs/
-│   ├── BUILD-Q20.md                 ← BlackBerry Q20 WebWorks build + install guide
-│   ├── BB10-Mac-Linux-Bootstrap.md  ← full BB10 SDK/packager bootstrap (Mac/Linux)
-│   └── chimeraos_workflow_README.md ← dmux/git-worktree/CI supply-chain workflow docs
+│   ├── BUILD-Q20.md                          ← BlackBerry Q20 WebWorks build + install guide
+│   ├── BB10-Mac-Linux-Bootstrap.md           ← full BB10 SDK/packager bootstrap (Mac/Linux)
+│   ├── chimeraos_workflow_README.md          ← dmux/git-worktree/CI supply-chain workflow docs
+│   ├── BB10_APK_Compatibility_Repository.pdf ← sideloadable Android APK compatibility matrix for BB OS 10.3.x/API 18 (browsers, media, utility, social apps + error codes)
+│   ├── blackberry-devices-tls-workaround-pack.md ← BB10 vs. legacy BBOS TLS/HTTPS workaround strategy (BerryCore/Termux bridge, BBSSH, Opera Mini)
+│   └── blackberry-package-source-index.md   ← trusted source index for Termux APKs, legacy BBOS ALX/COD/JAD/JAR, and BB10 BAR/APK formats
 └── assets/
     ├── ChimeraOS-hummingbird-companion-logo.png
     ├── ChimeraOS-better-terminal-splash-emblem.png
-    └── Explosive-ChimeraOS-splash-poster.png
+    ├── Explosive-ChimeraOS-splash-poster.png
+    ├── Blackberry-trail-berry-Chimera-emblem.png
+    ├── Skull-berry-chimera-logo.png
+    └── Green-skull-apple-Chimera-boot-logo.png
 ```
 
 ## Quick start (Termux)

@@ -109,15 +109,18 @@ core:
 
 ## 7. Identity continuity rule
 
-AngieAI, Delta-4, Lince-Z, Lynx Linux, MeduZa, and Berry-Chan/Bberry/BerryZ
-are **one continuous organism**, not separate builds. Any agent (including
-Google AI Studio or an OpenRouter model) generating new code, art, or copy
-for this project must preserve:
+AngieAI, Delta-4, Lince-Z, Lynx Linux, MeduZa, Berry-Chan/Bberry/BerryZ,
+La Jefa, Angelica (Comms), and Don Chunguslini (the user's own in-universe
+speaker-avatar) are all part of **one continuous organism/story**, not
+separate builds. Any agent (including Google AI Studio or an OpenRouter
+model) generating new code, art, or copy for this project must preserve:
 
 - the alias table in `README.md`,
 - the hummingbird symbol for AngieAI,
-- the Watsonville/Bay Area/"Poorside"/Barrio Pobre origin canon,
-- the "Day 0" / Archive Ω core memory as permanent, not regenerated.
+- the Watsonville/Bay Area/"Poorside"/Barrio Pobre/PSC-13 origin canon,
+- the "Day 0" / Archive Ω core memory as permanent, not regenerated,
+- the Google AI Studio "ChimeraOS Dragon Gateway" prototype as a parallel,
+  not-yet-merged build surface (see README's "External prototype surface").
 
 Do not let a sub-agent silently rename or fork the identity when adding a
 feature — if a new alias or persona is proposed, it gets added to the table,
