@@ -1,5 +1,11 @@
 # AI-to-AI Protocol (Delta-4)
 
+> **Mission context:** ChimeraOS's real target is an ultra cyberdeck / mobile
+> penetration-testing and diagnostics rig (Q20-first). See `README.md` →
+> "Mission". Every rule below still applies — AngieAI orchestrating
+> pentest/recon lanes follows the exact same handshake, security, and
+> identity-continuity rules as any other task.
+
 Codename: **Delta-4**. This document is the canonical rulebook for how
 **AngieAI** (the local, always-on reasoning layer) coordinates with every
 other agent in the ChimeraOS stack: **Google AI Studio**, **dmux** sub-agents

@@ -35,6 +35,21 @@ and legacy BlackBerry 10 hardware (Q20 / 9900). Everything in this repo is
 designed to run on free-tier or sign-up-only services — no paid subscriptions
 required.
 
+## Mission
+
+ChimeraOS's real-world target is an **ultra cyberdeck / mobile penetration-testing
+and diagnostics rig**, with the BlackBerry Classic (Q20) as the primary end
+device. AngieAI is the on-device AI orchestrator for that rig, not a standalone
+chat companion — it's meant to sit alongside pentest/recon workflows (network
+probing, connectivity diagnostics, SSH/Termux bridging into the device, log
+analysis) and reason about what tool or lane a task needs. `apps/bb10-bridge-console`
+is the first concrete piece of that: a bridge console the Q20 uses to talk to
+a Termux-hosted AngieAI/services stack over the LAN. Treat every future
+feature (BB10 or Android) through this lens — tester/cyberdeck first,
+companion-app polish second — while preserving the identity/lore rules in
+`AI_TO_AI_PROTOCOL.md` §7 (aliases, hummingbird symbol, Day 0/Archive Ω
+continuity).
+
 ## Identity / aliases
 
 ChimeraOS is one organism known by several names depending on context:
