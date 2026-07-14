@@ -1,0 +1,49 @@
+# ChimeraOS / AngieAI CI
+#
+# Setup (once, in GitHub): Settings -> Secrets and variables -> Actions ->
+# New repository secret -> name it OPENROUTER_API_KEY -> paste the key.
+# Use a GitHub Environment (e.g. "production") + environment secret instead
+# if you need different keys per environment.
+name: chimera-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show secret is wired (never print the value)
+        run: |
+          test -n "$OPENROUTER_API_KEY"
+          echo "OpenRouter key is available"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install reasoner/onnx service deps
+        run: |
+          pip install --no-cache-dir fastapi uvicorn onnxruntime numpy pydantic
+
+      - name: Validate shell scripts
+        run: |
+          bash -n setup.sh
+          bash -n scripts/chimeraos_workflow_bundle.sh
+
+      - name: Run tests (if any)
+        run: |
+          if [ -f pytest.ini ] || [ -f pyproject.toml ] || [ -d tests ]; then
+            pip install --no-cache-dir pytest
+            pytest -q
+          else
+            echo "No test suite found — skipping."
+          fi

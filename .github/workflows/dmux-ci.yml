@@ -1,0 +1,31 @@
+# dmux CI — reuses the SAME OPENROUTER_API_KEY secret as chimera-ci.yml so
+# dmux's optional AI-generated branch-name/commit-message feature and
+# AngieAI's fallback reasoning lane share one secret, set once in
+# Settings -> Secrets and variables -> Actions.
+name: dmux-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirm secret wired
+        run: test -n "$OPENROUTER_API_KEY"
+
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            npm test
+          else
+            echo "No package.json found — skipping npm test."
+          fi

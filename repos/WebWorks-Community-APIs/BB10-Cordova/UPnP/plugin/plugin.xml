@@ -1,0 +1,29 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="cordova-plugin-upnp"
+    version="1.0.0">
+
+    <name>UPnP</name>
+    <description>BlackBerry 10 Community Contributed UPnP API</description>
+    <license>Apache 2.0</license>
+    <author>Peardox, Junjie Huang</author>
+    <keywords>blackberry,UPnP,cordova</keywords>
+    <repo>https://github.com/blackberry/WebWorks-Community-APIs.git</repo>
+    <issue>https://github.com/blackberry/WebWorks-Community-APIs/issues</issue>
+    
+    <engines>
+        <engine name="cordova" version=">=3.0" />
+    </engines>
+
+    <js-module src="www/client.js">
+        <clobbers target="community.upnp" />
+    </js-module>
+
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" />
+        <lib-file src="src/blackberry10/native/device/libUPnP.so" arch="device"/>
+        <lib-file src="src/blackberry10/native/simulator/libUPnP.so" arch="simulator"/>
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="cordova-plugin-upnp" value="cordova-plugin-upnp" />
+        </config-file>
+    </platform>
+</plugin>

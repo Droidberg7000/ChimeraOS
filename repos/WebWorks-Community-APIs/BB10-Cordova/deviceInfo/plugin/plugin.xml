@@ -1,0 +1,29 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="cordova-plugin-deviceinfo"
+    version="1.0.1">
+
+    <name>DeviceInfo</name>
+    <description>BlackBerry 10 Community Contributed API to get hardware and network information from the device</description>
+    <license>Apache 2.0</license>
+    <author>Anzor Bashkhaz, Simon Booth, Alexandre Huot</author>
+    <keywords>blackberry,device,info,cordova</keywords>
+    <repo>https://github.com/blackberry/WebWorks-Community-APIs.git</repo>
+    <issue>https://github.com/blackberry/WebWorks-Community-APIs/issues</issue>
+
+    <engines>
+        <engine name="cordova" version=">=3.0" />
+    </engines>
+    
+    <js-module src="www/client.js">
+        <clobbers target="community.deviceInfo" />
+    </js-module>
+
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" />
+        <lib-file src="src/blackberry10/native/device/libDeviceinfo.so" arch="device"/>
+        <lib-file src="src/blackberry10/native/simulator/libDeviceinfo.so" arch="simulator"/>
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="cordova-plugin-deviceinfo" value="cordova-plugin-deviceinfo" />
+        </config-file>
+    </platform>
+</plugin>

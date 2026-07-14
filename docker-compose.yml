@@ -1,0 +1,35 @@
+# ChimeraOS / AngieAI service stack
+#
+# angieai-onnx      -> local model inference lane (FastAPI + ONNX Runtime)
+# angieai-reasoner   -> deterministic routing/reasoning lane
+#
+# Both are optional local backends AngieAI can call instead of a remote
+# OpenRouter model. Bring up with:
+#   docker compose up --build
+#
+version: "3.9"
+
+services:
+  angieai-onnx:
+    build: ./services/angieai-onnx
+    container_name: angieai-onnx
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=/app/model.onnx
+    restart: unless-stopped
+    networks:
+      - angieai-net
+
+  angieai-reasoner:
+    build: ./services/angieai-reasoner
+    container_name: angieai-reasoner
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    networks:
+      - angieai-net
+
+networks:
+  angieai-net:
+    driver: bridge

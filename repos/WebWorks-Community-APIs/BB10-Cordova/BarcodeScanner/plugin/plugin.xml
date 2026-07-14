@@ -1,0 +1,29 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="com.blackberry.community.barcodescanner"
+    version="2.0.2">
+
+    <name>Barcode Scanner</name>
+    <description>BlackBerry 10 Community Contributed API to scan barcodes</description>
+    <license>Apache 2.0</license>
+    <author>Alex Kwan, Mike Delong, Jasmin Auger, Alex Tough, Tim Tung, and Tim Windsor</author>
+    <keywords>blackberry,barcode,qr,scanner,cordova</keywords>
+    <repo>https://github.com/blackberry/WebWorks-Community-APIs.git</repo>
+    <issue>https://github.com/blackberry/WebWorks-Community-APIs/issues</issue>
+
+    <js-module src="www/client.js">
+        <clobbers target="community.barcodescanner" />
+    </js-module>
+
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" />
+        <lib-file src="src/blackberry10/native/device/libBarcodeScanner.so" arch="device"/>
+        <lib-file src="src/blackberry10/native/simulator/libBarcodeScanner.so" arch="simulator"/>
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="com.blackberry.community.barcodescanner" value="com.blackberry.community.barcodescanner" />
+        </config-file>
+        <config-file target="www/config.xml" parent="/widget/rim:permissions">
+            <rim:permit>use_camera</rim:permit>
+        </config-file>
+        <dependency id="com.blackberry.app" />
+    </platform>
+</plugin>

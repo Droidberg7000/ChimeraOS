@@ -1,0 +1,28 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="cordova-plugin-deviceemails"
+    version="1.0.0">
+
+    <name>Device Emails</name>
+    <description>BlackBerry 10 Community Contributed API to find the configured emails</description>
+    <license>Apache 2.0</license>
+    <author>Shikhir Singh</author>
+    <keywords>blackberry,email,account,id,cordova</keywords>
+    <repo>https://github.com/blackberry/WebWorks-Community-APIs.git</repo>
+    <issue>https://github.com/blackberry/WebWorks-Community-APIs/issues</issue>
+
+    <js-module src="www/client.js">
+        <clobbers target="community.deviceemails" />
+    </js-module>
+
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" />
+        <lib-file src="src/blackberry10/native/device/libDeviceEmailsExtension.so" arch="device"/>
+        <lib-file src="src/blackberry10/native/simulator/libDeviceEmailsExtension.so" arch="simulator"/>
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="com.blackberry.community.deviceemails" value="com.blackberry.community.deviceemails" />
+        </config-file>
+        <config-file target="www/config.xml" parent="/widget/rim:permissions">
+            <rim:permit>access_pimdomain_messages</rim:permit>
+        </config-file>
+    </platform>
+</plugin>

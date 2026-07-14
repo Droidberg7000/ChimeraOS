@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+ * Copyright (c) 2012 Research In Motion Limited.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+
+<head>
+	<title>BBM APIs</title>
+	<link type="text/css" rel="stylesheet" href="./css/bbui.css" />
+</head>
+
+<body>
+	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="./js/bbui.js"></script>
+	<script type="text/javascript" src="./js/bbm.js"></script>
+	<script type="text/javascript">
+		/*global bb, bbm */
+
+		window.addEventListener('DOMContentLoaded', function () {
+			document.addEventListener('deviceready', function () {
+				bb.init({
+					controlsDark: true,
+					listsDark: true,
+					ondomready: function (element, id) {
+						if (id === 'menu') {
+							/************************************************/
+							/*	blackberry.bbm.platform						*/
+							/************************************************/
+
+							/* Register. */
+							element.querySelector('#register').addEventListener('click', function () {
+								if (bbm.registered === false) {
+									bbm.register();
+								}
+							}, false);
+
+							/* My Profile. */
+							element.querySelector('#myprofile').addEventListener('click', function () {
+								if (bbm.registered === true) {
+									bb.pushScreen('profile.htm', 'profile');
+								}
+							}, false);
+
+							/* Set Display Picture. */
+							element.querySelector('#setdisplay').addEventListener('click', function () {
+								if (bbm.registered === true) {
+									bbm.setDisplayPicture();
+								}
+							}, false);
+
+							/* Invite to Download. */
+							element.querySelector('#invitedl').addEventListener('click', function () {
+								if (bbm.registered === true) {
+									bbm.inviteToDownload();
+								}
+							}, false);
+
+							/************************************************/
+							/*	blackberry.invoke							*/
+							/************************************************/
+
+							/* Invite to BBM. */
+							element.querySelector('#invitebbm').addEventListener('click', function () {
+								bbm.inviteToBBM();
+							}, false);
+
+							/* Set Avatar, local:// file. */
+							element.querySelector('#setavatarlocal').addEventListener('click', function () {
+								bbm.setAvatarLocal();
+							}, false);
+
+							/* Set Avatar, file:// file*/
+							element.querySelector('#setavatarshared').addEventListener('click', function () {
+								bbm.setAvatarShared();
+							}, false);
+
+							/* Start Chat. */
+							element.querySelector('#startchat').addEventListener('click', function () {
+								bbm.startChat('');
+							}, false);
+
+							/* Share Text. */
+							element.querySelector('#sharetext').addEventListener('click', function () {
+								bbm.shareText();
+							}, false);
+
+							/* Share Image. */
+							element.querySelector('#shareimg').addEventListener('click', function () {
+								bbm.shareImage();
+							}, false);
+
+							/************************************************/
+							/*	Action bar.									*/
+							/************************************************/
+
+							/* Notes and Known Issues. */
+							element.querySelector('#notes').addEventListener('click', function () {
+								bb.pushScreen('notes.htm', 'notes');
+							}, false);
+
+						} else if (id === 'profile') {
+
+							/* Populate the profile. */
+							bbm.populate(element);
+
+							/* Refresh Profile. */
+							element.querySelector('#refresh').addEventListener('click', function () {
+								bbm.populate(element);
+							}, false);
+
+							/* Save profile. */
+							element.querySelector('#save').addEventListener('click', function () {
+								bbm.save();
+							}, false);
+						}
+					}
+				});
+				bb.pushScreen('menu.htm', 'menu');
+			}, false);
+		}, false);
+	</script>
+</body>
+
+</html>

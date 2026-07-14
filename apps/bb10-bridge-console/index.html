@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>BB10 Bridge Console</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="screen">
+        <div class="header">
+            <img src="assets/icon-86.png" alt="AngieAI" />
+            <h1>BRIDGE CONSOLE</h1>
+            <span id="statusPill" class="status-pill offline">OFFLINE</span>
+        </div>
+
+        <form id="bridgeForm">
+            <div class="field">
+                <label for="host">Termux / AngieAI Host</label>
+                <input type="text" id="host" placeholder="192.168.1.42" />
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="reasonerPort">Reasoner Port</label>
+                    <input type="number" id="reasonerPort" placeholder="8001" />
+                </div>
+                <div class="field">
+                    <label for="onnxPort">ONNX Port</label>
+                    <input type="number" id="onnxPort" placeholder="8000" />
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="userField">User (optional)</label>
+                <input type="text" id="userField" placeholder="angieai" />
+            </div>
+
+            <div class="field">
+                <label for="queryText">Query to AngieAI</label>
+                <input type="text" id="queryText" placeholder="build me an apk for the Q20" />
+            </div>
+
+            <button type="button" id="connectBtn">Test Connection</button>
+            <button type="button" id="sendBtn" class="secondary">Send to Reasoner</button>
+
+            <div class="log" id="log">Bridge console idle. Enter your Termux host/ports and tap Test Connection.</div>
+        </form>
+
+        <div class="footer-note">AngieAI / ChimeraOS · BB10 Bridge Console · com.user.bb10bridgeconsole</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
