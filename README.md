@@ -102,8 +102,10 @@ are part of the backstory canon and should be preserved, not rewritten.
 - **angieai-onnx** is AngieAI's local model-inference lane (FastAPI + ONNX Runtime),
   with an optional TorchServe path for managed multi-model serving.
 - **angieai-pentest** is the authorized-use-only recon/diagnostics lane for the
-  cyberdeck mission (host sweeps, port scans, banner grabs on your own private
-  network only — see `ETHICS.md` and `services/angieai-pentest/README.md`).
+  cyberdeck mission: host sweeps, full-range port scans + banner grabs on your
+  own private network only, a local heuristic vuln-signature matcher
+  (`/analyze/ports`), and passive Wi-Fi beacon analysis (`/recon/wifi`) — see
+  `ETHICS.md` and `services/angieai-pentest/README.md`.
 - **Google AI Studio** is treated as the remote build agent for anything that needs
   Android/BAR packaging horsepower (see `GOOGLE_AI_STUDIO_PROMPT.md`).
 - **dmux** manages parallel sub-agents (Claude Code / Codex / OpenCode-style) across
@@ -130,7 +132,10 @@ ChimeraOS-final-build/
 │   ├── chimera-ci.yml               ← main CI: validates scripts, wires OPENROUTER_API_KEY
 │   └── dmux-ci.yml                  ← dmux CI, reuses the same OPENROUTER_API_KEY secret
 ├── scripts/
-│   └── chimeraos_workflow_bundle.sh ← real dmux/worktree + image sign/SBOM supply-chain script
+│   ├── chimeraos_workflow_bundle.sh ← real dmux/worktree + image sign/SBOM supply-chain script
+│   ├── termux_stack_up.sh           ← brings up all 3 services natively on Termux (no Docker)
+│   ├── termux_stack_down.sh         ← stops what termux_stack_up.sh started
+│   └── wifi_recon_termux.sh         ← passive Wi-Fi beacon recon via Termux:API → angieai-pentest
 ├── services/
 │   ├── angieai-onnx/                ← FastAPI + ONNX Runtime local inference lane
 │   ├── angieai-reasoner/            ← deterministic routing/reasoning microservice
@@ -164,6 +169,8 @@ from this folder directly — no need to fetch it remotely first.
 
 ## Bring up the local AI services
 
+On Linux/macOS (Docker):
+
 ```bash
 cp .env.example .env      # fill in OPENROUTER_API_KEY
 docker compose up --build
@@ -180,7 +187,18 @@ curl -s http://localhost:8002/health
 with a verified default `model.onnx` (MNIST digit classifier, see
 `services/angieai-onnx/README.md`) so the container builds and
 `/predict` returns real output instead of a stub error — swap it for
-AngieAI's real NLP model when one is ready. See `SUPPORT.md` if either
+AngieAI's real NLP model when one is ready.
+
+On Termux/Android (no Docker — runs the same three services natively):
+
+```bash
+chmod +x scripts/termux_stack_up.sh scripts/termux_stack_down.sh
+./scripts/termux_stack_up.sh          # starts all 3 in the background
+./scripts/wifi_recon_termux.sh        # optional: passive Wi-Fi beacon recon (needs Termux:API)
+./scripts/termux_stack_down.sh        # stop everything
+```
+
+See `SUPPORT.md` if either
 container doesn't come up cleanly.
 
 ## CI setup (GitHub Actions)

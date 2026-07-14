@@ -25,8 +25,12 @@
         sweepBtn: document.getElementById("sweepBtn"),
         targetHost: document.getElementById("targetHost"),
         targetPorts: document.getElementById("targetPorts"),
-        portScanBtn: document.getElementById("portScanBtn")
+        portScanBtn: document.getElementById("portScanBtn"),
+        fullRangeBtn: document.getElementById("fullRangeBtn"),
+        analyzeBtn: document.getElementById("analyzeBtn")
     };
+
+    var lastPortScan = null; // { host, open_ports } from the most recent /scan/ports call
 
     function log(msg) {
         var ts = new Date().toISOString().split("T")[1].split(".")[0];
@@ -44,7 +48,8 @@
             reasonerPort: els.reasonerPort.value.trim() || "8001",
             onnxPort: els.onnxPort.value.trim() || "8000",
             pentestPort: els.pentestPort.value.trim() || "8002",
-            user: els.userField.value.trim()
+            user: els.userField.value.trim(),
+            authorized: !!els.authorizedCheck.checked
         };
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
@@ -137,12 +142,14 @@
         els.onnxPort.value = profile.onnxPort || "8000";
         els.pentestPort.value = profile.pentestPort || "8002";
         els.userField.value = profile.user || "";
+        els.authorizedCheck.checked = !!profile.authorized;
     }
 
     // --- Recon panel (angieai-pentest) ---------------------------------
     // Authorized-use-only: the service itself refuses unauthorized/public
-    // targets too, but the app also blocks the request client-side so the
-    // operator has to explicitly check the box every session.
+    // targets too. The checkbox state now persists in the saved profile so
+    // you don't have to re-check it every launch — uncheck it any time you
+    // stop being sure the target is yours to test.
 
     function requireAuthorized() {
         if (!els.authorizedCheck.checked) {
@@ -211,6 +218,7 @@
                 open.forEach(function (p) {
                     log("   open: " + p.port + (p.service_guess ? " (" + p.service_guess + ")" : "") + (p.banner ? " — " + p.banner : ""));
                 });
+                lastPortScan = { host: host, open_ports: open };
                 setOnline(true);
             })
             .catch(function (err) {
@@ -219,10 +227,48 @@
             });
     }
 
+    function useFullRange() {
+        var ports = [];
+        for (var p = 1; p <= 65535; p++) ports.push(p);
+        els.targetPorts.value = ports.join(",");
+        log("Loaded full 1-65535 port range into the Ports field (this scan will take a while).");
+    }
+
+    function analyzeLastScan() {
+        var profile = saveProfile();
+        if (!lastPortScan || !lastPortScan.open_ports.length) {
+            log("Run a port scan with at least one open port first.");
+            return;
+        }
+        log("-> analyzing " + lastPortScan.open_ports.length + " open port(s) on " + lastPortScan.host + " ...");
+        fetch(pentestUrl(profile, "/analyze/ports"), {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ host: lastPortScan.host, open_ports: lastPortScan.open_ports })
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var findings = data.findings || [];
+                if (!findings.length) {
+                    log("<- no heuristic findings (this is not a guarantee of safety — just nothing matched).");
+                    return;
+                }
+                findings.forEach(function (f) {
+                    log("   [" + f.severity.toUpperCase() + "] port " + f.port + ": " + f.title);
+                });
+                log("<- " + data.note);
+            })
+            .catch(function (err) {
+                log("<- analyze request failed: " + err.message);
+            });
+    }
+
     els.connectBtn.addEventListener("click", testConnection);
     els.sendBtn.addEventListener("click", sendToReasoner);
     els.sweepBtn.addEventListener("click", sweepSubnet);
     els.portScanBtn.addEventListener("click", scanPorts);
+    els.fullRangeBtn.addEventListener("click", useFullRange);
+    els.analyzeBtn.addEventListener("click", analyzeLastScan);
 
     restoreProfile();
     log("BB10 Bridge Console ready.");
