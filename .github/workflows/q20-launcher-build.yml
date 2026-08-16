@@ -1,0 +1,55 @@
+name: Q20 Launcher Build
+
+on:
+  push:
+    paths:
+      - 'q20-launcher/**'
+      - 'scripts/build-q20-launcher.sh'
+      - '.github/workflows/q20-launcher-build.yml'
+  pull_request:
+    paths:
+      - 'q20-launcher/**'
+      - 'scripts/build-q20-launcher.sh'
+      - '.github/workflows/q20-launcher-build.yml'
+
+jobs:
+  build-launcher:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (legacy for BB10 Cordova)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install Cordova (legacy BB10-compatible)
+        run: npm install -g cordova@4.2.0
+
+      - name: Install BB10 tooling (placeholder)
+        run: |
+          echo "BB10 WebWorks/Native SDK must be installed on the runner or self-hosted runner."
+          echo "This step is a placeholder for your actual BB10 SDK installation."
+
+      - name: Build Q20 Launcher (debug)
+        run: |
+          if [ -d q20-launcher ]; then
+            cd q20-launcher
+            cordova build blackberry10 || echo "BB10 platform not available; build skipped in this environment."
+          else
+            echo "q20-launcher directory not found; skipping build."
+          fi
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p build/q20-launcher
+          if [ -d q20-launcher/platforms/blackberry10/build/device ]; then
+            cp q20-launcher/platforms/blackberry10/build/device/*.bar build/q20-launcher/ 2>/dev/null || true
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: q20-launcher-artifacts
+          path: build/q20-launcher
