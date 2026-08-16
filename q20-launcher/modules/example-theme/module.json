@@ -1,0 +1,11 @@
+{
+  "id": "example-theme",
+  "name": "Example Theme",
+  "version": "0.1.0",
+  "scope": "app-ui-only",
+  "description": "Example local UI theme for the Q20 launcher. Does not modify BB10 system settings or partitions.",
+  "author": "ChimeraOS",
+  "homepage": "https://github.com/Droidberg7000/ChimeraOS",
+  "permissions": [],
+  "entry": "theme.json"
+}

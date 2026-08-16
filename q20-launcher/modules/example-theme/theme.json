@@ -1,0 +1,31 @@
+{
+  "colors": {
+    "background": "#0b0f14",
+    "surface": "#14232c",
+    "text": "#e9f2f5",
+    "muted": "#9caeba",
+    "accent": "#1f7285",
+    "accentText": "#ffffff"
+  },
+  "spacing": {
+    "panePadding": 18,
+    "gridGap": 10,
+    "cardPadding": 12
+  },
+  "typography": {
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "fontSizeBase": 13,
+    "fontSizeLarge": 18,
+    "fontSizeXLarge": 32
+  },
+  "icons": {
+    "launcher": "assets/icon-launcher.png",
+    "vault": "assets/icon-vault.png",
+    "diagnostics": "assets/icon-diagnostics.png",
+    "about": "assets/icon-about.png"
+  },
+  "notes": [
+    "This theme is applied only within the ChimeraOS launcher UI.",
+    "It does not modify BB10 system themes, lock screen, or status bar."
+  ]
+}
