@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:rim="http://www.blackberry.com/ns/widgets"
+        id="com.chimeraos.q20launcher"
+        version="0.1.0">
+  <name>ChimeraOS Launcher</name>
+  <description>ChimeraOS launcher shell for BlackBerry Classic Q20.</description>
+  <author>ChimeraOS</author>
+  <content src="index.html" />
+  <preference name="Orientation" value="portrait" />
+  <preference name="Fullscreen" value="true" />
+  <preference name="BackgroundColor" value="0x0B0F14" />
+  <feature id="blackberry.app" required="true" version="1.0.0.0" />
+  <feature id="blackberry.system" required="true" version="1.0.0.0" />
+  <access uri="*" subdomains="true" />
+</widget>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>ChimeraOS Launcher</title>
+  <link rel="stylesheet" href="css/launcher.css">
+</head>
+<body>
+  <main id="app" class="app-shell">
+    <header class="status-bar">
+      <div><strong>CHIMERAOS</strong><span class="muted"> / Q20</span></div>
+      <div id="clock" aria-label="Current time">--:--</div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">BLACKBERRY CLASSIC / BB10 SHELL</p>
+      <h1 id="page-title">Home</h1>
+      <p id="page-subtitle">ChimeraOS launcher shell for the BlackBerry Classic (Q20).</p>
+    </section>
+
+    <nav class="nav" aria-label="Launcher navigation">
+      <button data-route="home" class="nav-button active">Home</button>
+      <button data-route="vault" class="nav-button">Vault</button>
+      <button data-route="diagnostics" class="nav-button">Diagnostics</button>
+      <button data-route="about" class="nav-button">About</button>
+    </nav>
+
+    <section id="home" class="pane active" aria-label="Home">
+      <div id="telemetry" class="telemetry-grid"></div>
+      <h2>Launch</h2>
+      <div id="launcher-grid" class="launcher-grid"></div>
+    </section>
+
+    <section id="vault" class="pane" aria-label="Package vault">
+      <h2>Package Vault</h2>
+      <p class="muted">Catalogue only. Installation remains user-mediated and subject to BB10 permissions.</p>
+      <div id="vault-list" class="list"></div>
+    </section>
+
+    <section id="diagnostics" class="pane" aria-label="Diagnostics">
+      <h2>Diagnostics</h2>
+      <div id="diagnostics-output" class="diagnostics-output"></div>
+      <div class="actions">
+        <button id="refresh-diagnostics">Refresh</button>
+        <button id="export-diagnostics">Export JSON</button>
+      </div>
+    </section>
+
+    <section id="about" class="pane" aria-label="About ChimeraOS Launcher">
+      <h2>About</h2>
+      <p>ChimeraOS Launcher is a Q20-focused application shell for the main ChimeraOS project. It does not replace BB10 system home, lock screen, or privileged services.</p>
+      <p class="muted">Version <span id="app-version">0.1.0</span> · local-first prototype · ChimeraOS (not JavaBoyChimera)</p>
+    </section>
+
+    <footer class="footer">Trackpad/keyboard friendly · Local state only · No secrets stored</footer>
+  </main>
+  <script src="js/launcher.js"></script>
+  <script src="js/telemetry.js"></script>
+  <script src="js/package-vault.js"></script>
+  <script src="js/diagnostics.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

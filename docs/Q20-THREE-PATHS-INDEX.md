@@ -84,4 +84,8 @@ ChimeraOS/
 - **BB10-Derivative OS:** Experimental overlay/installer track; must maintain a tested rollback to stock.
 - **Standalone OS:** Long-term research; no flashable images until a verified boot path and recovery are established.
 
+## Note on JavaBoyChimera
+
+JavaBoyChimera is a separate sub-project (Game Boy Color/Java emulator work) and is not part of this Q20 launcher build. The Q20 launcher targets the main ChimeraOS project and its services (`services/`, `apps/`, `repos/`).
+
 Update this index as new scripts, workflows, or milestones are added.
