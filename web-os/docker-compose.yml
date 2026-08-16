@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # Main web OS application
+  web-os:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+    volumes:
+      - ./data:/app/data
+      - ./repos:/app/repos
+    depends_on:
+      - angieai-onnx
+      - angieai-reasoner
+    networks:
+      - chimera-network
+
+  # AngieAI ONNX inference service
+  angieai-onnx:
+    image: chimeraos/angieai-onnx:latest
+    build:
+      context: ../services/angieai-onnx
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - MODEL_PATH=/models/chimera-v1.onnx
+      - MAX_TOKENS=512
+    volumes:
+      - ../services/angieai-onnx/models:/models
+    networks:
+      - chimera-network
+
+  # AngieAI reasoning microservice
+  angieai-reasoner:
+    image: chimeraos/angieai-reasoner:latest
+    build:
+      context: ../services/angieai-reasoner
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - REASONING_MODEL=meta-llama/llama-3-70b-instruct
+    networks:
+      - chimera-network
+
+  # Redis for sessions and cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - chimera-network
+
+  # PostgreSQL for user data
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=chimera
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-chimera_dev_password}
+      - POSTGRES_DB=chimeraos
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - chimera-network
+
+networks:
+  chimera-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
