@@ -1,0 +1,8 @@
+MIDlet-Name: ChimeraTube-Pearl3G
+MIDlet-Version: 3.0.0
+MIDlet-Vendor: Chimera Retro Labs
+MIDlet-Description: Standalone RTSP & 3GP Video Streamer for BlackBerry Pearl 3G
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-1: ChimeraTube,,com.chimeratube.pearl3g.Pearl3GChimeraTubeMIDlet
+RIM-MIDlet-Flags-1: 1

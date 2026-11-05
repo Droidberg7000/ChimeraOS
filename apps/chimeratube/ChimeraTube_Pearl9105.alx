@@ -1,0 +1,22 @@
+<loader version="1.0">
+    <application id="com.chimeratube.pearl3g">
+        <name>ChimeraTube (Pearl 3G)</name>
+        <description>Standalone YouTube Streaming Client for BlackBerry Pearl 3G (9100/9105)</description>
+        <version>3.0.0</version>
+        <vendor>Chimera Retro Labs</vendor>
+        <copyright>Copyright (c) 2026 Chimera Retro Labs</copyright>
+
+        <filesets target="5.0.0">
+            <directory>bin</directory>
+            <files>
+                <file>ChimeraTube_Pearl9105.cod</file>
+            </files>
+        </filesets>
+        <filesets target="6.0.0">
+            <directory>bin</directory>
+            <files>
+                <file>ChimeraTube_Pearl9105.cod</file>
+            </files>
+        </filesets>
+    </application>
+</loader>
