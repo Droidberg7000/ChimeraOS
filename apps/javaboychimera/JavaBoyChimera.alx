@@ -1,0 +1,21 @@
+<loader version="1.0">
+    <application id="com.javaboychimera">
+        <name>JavaBoyChimera</name>
+        <description>Game Boy &amp; GBC ROM Validation Shell</description>
+        <version>0.1.0</version>
+        <vendor>ChimeraOS</vendor>
+        <copyright>Copyright (c) 2026 ChimeraOS</copyright>
+        <filesets target="7.1.0">
+            <directory>bin</directory>
+            <files>
+                <file>JavaBoyChimera.cod</file>
+            </files>
+        </filesets>
+        <filesets target="6.0.0">
+            <directory>bin</directory>
+            <files>
+                <file>JavaBoyChimera.cod</file>
+            </files>
+        </filesets>
+    </application>
+</loader>
