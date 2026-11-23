@@ -1,0 +1,21 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b0f14; color: #edf3fa; font: 18px/1.45 sans-serif; }
+.app-shell { max-width: 900px; margin: auto; padding: 16px; }
+.status-bar { border-bottom: 1px solid #394657; padding-bottom: 10px; }
+#clock { float: right; }
+h1, h2, h3 { line-height: 1.2; }
+.muted, .eyebrow, .footer { color: #b5c4d6; }
+.nav { margin: 16px 0; }
+button { font: inherit; color: inherit; background: #182230; border: 2px solid #53657c; border-radius: 6px; padding: 12px; margin: 4px; cursor: pointer; }
+button:focus, a:focus, textarea:focus { outline: 3px solid #ffd166; outline-offset: 2px; }
+.nav-button.active { background: #284764; border-color: #8dd8ff; }
+.pane { display: none; }
+.pane.active { display: block; }
+.launch-tile { display: inline-block; width: 46%; vertical-align: top; min-height: 110px; text-align: left; }
+.launch-tile strong, .launch-tile span { display: block; }
+.launch-tile span { font-size: 15px; color: #c8d4e2; margin-top: 6px; }
+.telemetry-item, .package-item { background: #141d28; border: 1px solid #394657; padding: 12px; margin: 10px 0; overflow-wrap: break-word; word-wrap: break-word; }
+pre, textarea { width: 100%; white-space: pre-wrap; word-wrap: break-word; }
+textarea { min-height: 240px; color: #edf3fa; background: #141d28; padding: 10px; font: 15px monospace; }
+.footer { margin-top: 24px; font-size: 14px; }
+@media (max-width: 420px) { .launch-tile { width: 97%; } .app-shell { padding: 10px; } }

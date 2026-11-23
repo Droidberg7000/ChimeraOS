@@ -1,94 +1,47 @@
 #!/usr/bin/env bash
-# build-q20-launcher.sh
-# Builds the Q20 Chimera Launcher (WebWorks/Cordova) as a signed .bar.
-# Requires: Node.js, Cordova CLI compatible with BB10, BB10 WebWorks/Native SDK tools.
-
+# Builds only; deployment is a separate, explicit step.
 set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-LAUNCHER_DIR="${ROOT_DIR}/q20-launcher"
-BUILD_DIR="${ROOT_DIR}/build/q20-launcher"
-
-usage() {
-  echo "Usage: $0 [--release] [--deploy] [--device-ip IP] [--device-password PASS]"
-  echo "  --release          Build a release (signed) .bar"
-  echo "  --deploy           Deploy the built .bar to a Q20 device"
-  echo "  --device-ip IP     Q20 device IP (required if --deploy)"
-  echo "  --device-password PASS  Q20 device password (required if --deploy)"
-  exit 1
-}
-
-RELEASE=0
-DEPLOY=0
-DEVICE_IP=""
-DEVICE_PASSWORD=""
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --release) RELEASE=1; shift ;;
-    --deploy) DEPLOY=1; shift ;;
-    --device-ip) DEVICE_IP="$2"; shift 2 ;;
-    --device-password) DEVICE_PASSWORD="$2"; shift 2 ;;
-    *) usage ;;
-  esac
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+APP="$ROOT/q20-launcher"
+MODE=debug
+if [[ $# -gt 1 ]]; then echo 'Usage: bash scripts/build-q20-launcher.sh [--release]' >&2; exit 2; fi
+if [[ $# -eq 1 ]]; then
+  [[ "$1" == --release ]] || { echo 'Only --release is supported; use deploy-q20-launcher.sh separately.' >&2; exit 2; }
+  MODE=release
+fi
+for tool in python3 cordova; do
+  command -v "$tool" >/dev/null || { echo "Missing dependency: $tool" >&2; exit 1; }
 done
-
-if [[ ${DEPLOY} -eq 1 && ( -z "${DEVICE_IP}" || -z "${DEVICE_PASSWORD}" ) ]]; then
-  echo "Error: --deploy requires --device-ip and --device-password"
-  usage
-fi
-
-if [[ ! -d "${LAUNCHER_DIR}" ]]; then
-  echo "Error: Launcher directory not found at ${LAUNCHER_DIR}"
-  echo "Create the q20-launcher Cordova project according to Q20-FULL-LAUNCHER-SPEC.md"
+python3 "$APP/tools/check_source.py"
+[[ -d "$APP/platforms/blackberry10" ]] || {
+  echo 'BB10 Cordova platform is not configured. Provision a verified legacy SDK/platform first; no automatic downloads performed.' >&2
   exit 1
-fi
-
-mkdir -p "${BUILD_DIR}"
-
-cd "${LAUNCHER_DIR}"
-
-if [[ ${RELEASE} -eq 1 ]]; then
-  echo "Building release .bar (signing configured via BB10 SDK)"
-  cordova build --release blackberry10
-else
-  echo "Building debug .bar"
-  cordova build blackberry10
-fi
-
-# Locate the .bar
-BAR_DIR="${LAUNCHER_DIR}/platforms/blackberry10/build/device"
-BAR_FILE=$(find "${BAR_DIR}" -maxdepth 1 -name '*.bar' -type f | head -n1)
-
-if [[ -z "${BAR_FILE}" ]]; then
-  echo "Error: No .bar found in ${BAR_DIR}"
-  exit 1
-fi
-
-BAR_NAME=$(basename "${BAR_FILE}")
-echo "Built .bar: ${BAR_NAME}"
-
-cp "${BAR_FILE}" "${BUILD_DIR}/"
-echo "Copied .bar to ${BUILD_DIR}/${BAR_NAME}"
-
-# Generate simple manifest
-MANIFEST="${BUILD_DIR}/manifest.json"
-cat > "${MANIFEST}" <<EOF
-{
-  "artifact": "${BAR_NAME}",
-  "build_type": "${RELEASE:+release}${RELEASE:-debug}",
-  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "spec": "Q20-FULL-LAUNCHER-SPEC.md"
 }
-EOF
-
-echo "Generated manifest: ${MANIFEST}"
-
-if [[ ${DEPLOY} -eq 1 ]]; then
-  echo "Deploying to Q20 at ${DEVICE_IP}"
-  blackberry-deploy -installApp -device "${DEVICE_IP}" -password "${DEVICE_PASSWORD}" "${BUILD_DIR}/${BAR_NAME}"
-  echo "Deploy complete"
-fi
-
-echo "Build complete: ${BUILD_DIR}/${BAR_NAME}"
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+MARKER="$STAGE/build-start"
+touch "$MARKER"
+cd "$APP"
+if [[ "$MODE" == release ]]; then cordova build --release blackberry10; else cordova build blackberry10; fi
+ARTIFACTS=()
+while IFS= read -r -d '' file; do ARTIFACTS+=("$file"); done < <(find platforms/blackberry10 -type f -name '*.bar' -newer "$MARKER" -print0)
+[[ ${#ARTIFACTS[@]} -eq 1 ]] || {
+  printf 'Expected exactly one newly written BAR, found %s. No artifact published.\n' "${#ARTIFACTS[@]}" >&2
+  exit 1
+}
+python3 - "${ARTIFACTS[0]}" "$ROOT/build/q20-launcher" "$MODE" <<'PY'
+import datetime, hashlib, json, pathlib, shutil, sys, zipfile
+src, out, mode = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
+with zipfile.ZipFile(src) as z:
+    if z.testzip() is not None:
+        raise SystemExit('Archive integrity check failed')
+    if 'META-INF/MANIFEST.MF' not in z.namelist():
+        raise SystemExit('BAR manifest is missing')
+out.mkdir(parents=True, exist_ok=True)
+dst = out / src.name
+shutil.copy2(src, dst)
+data = {'artifact': dst.name, 'build_type': mode, 'sha256': hashlib.sha256(dst.read_bytes()).hexdigest(), 'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'verification': 'Archive structure only; signing, installability and device execution unverified'}
+(out / 'manifest.json').write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+print('Packaged:', dst)
+print(data['verification'])
+PY

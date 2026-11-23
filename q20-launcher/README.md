@@ -1,42 +1,64 @@
 # ChimeraOS Q20 Launcher
 
-A local-first WebWorks/Cordova launcher shell for the BlackBerry Classic (Q20) on stock BB10, part of the main **ChimeraOS** project.
+Application-shell prototype for stock BB10, not replacement firmware or a privileged Home launcher.
 
-## Scope
+## Preview and static checks
 
-- Full-screen application-shell experience: launcher tiles, package-vault catalogue, diagnostics, and safe capability telemetry.
-- Q20-friendly UI intended for 720x720 display, keyboard, and trackpad use.
-- No claim of privileged home-screen replacement, system-wide package control, or privileged system telemetry.
-- This is the ChimeraOS launcher for Q20, not the JavaBoyChimera emulator sub-project.
+Requires Python 3. From the repository root:
 
-## Local setup
-
-Install a Cordova version compatible with the BB10 tooling you have installed, then:
-
-```bash
-cd q20-launcher
-npm install
-npm run prepare:bb10
-npm run build:bb10
+```sh
+python3 q20-launcher/tools/check_source.py
+python3 -m http.server 8080 --bind 127.0.0.1 --directory q20-launcher/www
 ```
 
-For a release build, configure BB10 signing locally and run:
+Open http://127.0.0.1:8080 in a desktop browser. Stop the server with Ctrl-C.
+Alternatively, from q20-launcher, run `npm run check` or `npm run preview`.
+No npm dependencies are needed for this static preview. These checks do not test JavaScript execution or a phone.
 
-```bash
-npm run release:bb10
+## Existing scope
+
+Home tiles, a package guidance catalogue, and application/browser diagnostics.
+Some tiles are explicitly placeholders, not working external integrations.
+Diagnostics export displays selectable JSON for manual copy; it does not claim a file was saved.
+No notes, cloud VM, AI conversation, flashing, system task manager, or automatic installation is implemented by this repair.
+
+## Device build: separately provisioned legacy toolchain
+
+You must supply a compatible Cordova CLI, BB10 platform and SDK, plus any required valid signing/debug credentials.
+No verified version combination is pinned here yet. Do not install arbitrary latest Cordova and assume BB10 support.
+The presence of source code or a ZIP does not establish present-day signing/deployment availability.
+
+The build wrapper expects a configured `q20-launcher/platforms/blackberry10` project.
+After verifying and provisioning that environment:
+
+```sh
+bash scripts/build-q20-launcher.sh
+# Optional release build with signing configured locally:
+bash scripts/build-q20-launcher.sh --release
 ```
 
-Use the repository wrapper to deploy a built `.bar`:
+The wrapper requires exactly one newly written BAR and checks archive integrity plus manifest presence.
+It copies to `build/q20-launcher/` and records SHA-256/build mode. It does NOT verify signatures or installability.
+Zero or multiple newly written BARs fail closed for manual inspection.
 
-```bash
-../scripts/deploy-q20-launcher.sh --device-ip <Q20_IP> --device-password <DEVICE_PASSWORD>
+## Explicit installation
+
+```sh
+bash scripts/deploy-q20-launcher.sh --device-ip YOUR_DEVICE_IP --bar /path/to/exact-app.bar
 ```
 
-Never commit device passwords, signing keys, tokens, CSK/TSK files, or generated signing databases.
+The wrapper confirms target/artifact and prompts for the password without echo.
+Do not pass credentials in the command, commit keys, or paste passwords into chat.
+The legacy deploy tool still receives the password as a process argument: other sufficiently privileged local processes may inspect it.
+Use a trusted host. No firmware, reset, recovery, or raw partition operations are performed.
 
-## Integration
+## Manual acceptance checklist
 
-- Read `docs/Q20-FULL-LAUNCHER-SPEC.md` for the implementation plan.
-- Read `docs/Q20-RECOVERY-AND-ROLLBACK.md` before device experiments.
-- The main ChimeraOS services and apps live in the parent repo (`services/`, `apps/`, `repos/`); this launcher is the Q20 shell that can surface them.
-- JavaBoyChimera is a separate sub-project and is not built or deployed by this launcher.
+- Preview loads with no missing asset requests or uncaught JavaScript errors.
+- Home, Vault, Diagnostics, and About navigation work.
+- Focus remains visible with Tab/Shift-Tab and activation works with Enter.
+- Diagnostics Refresh works; Export presents selectable JSON.
+- Narrow and square layouts remain readable.
+- Native build, signing, installation, physical keyboard/trackpad, and resume behavior must be checked separately on Q20.
+
+Never treat the browser preview or static check as proof of a working device package.

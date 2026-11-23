@@ -1,0 +1,12 @@
+{
+  "name": "chimeraos-q20-launcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Q20 application shell; legacy BB10 toolchain supplied separately",
+  "scripts": {
+    "preview": "python3 -m http.server 8080 --bind 127.0.0.1 --directory www",
+    "check": "python3 tools/check_source.py",
+    "build:bb10": "bash ../scripts/build-q20-launcher.sh",
+    "release:bb10": "bash ../scripts/build-q20-launcher.sh --release"
+  }
+}
